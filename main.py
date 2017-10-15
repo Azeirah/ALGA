@@ -45,7 +45,6 @@ class AdjacencyMatrix():
         return s
 
     def addNode(self, x, node):
-        self.adjacency[x][x] = 1
         self.nodes[x] = node
 
     def connectNodes(self, x, y):
