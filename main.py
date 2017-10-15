@@ -1,5 +1,6 @@
 import random
 
+
 dungeonConfig = {
     # amount of rooms = X * Y
     "X": 5,
@@ -7,33 +8,49 @@ dungeonConfig = {
 }
 
 
+class Node():
+    def __init__(self, ID):
+        self.ID = ID
+
+    def getID(self):
+        return self.ID
+
+    def __str__(self):
+        return str(self.ID)
+
+
 # adjency matrix info
 # http://www.algolist.net/Data_structures/Graph/Internal_representation
 class AdjacencyMatrix():
     def __init__(self, amountOfNodes):
         self.n = amountOfNodes
+        # initializes an empty array of size `n`
+        self.nodes = [None] * amountOfNodes
 
-        self.storage = list(
+        # fairly unreadable way to generate a 2d array in python
+        self.adjacency = list(
             [list([0 for y in range(amountOfNodes)])
                      for x in range(amountOfNodes)]
         )
 
     def __str__(self):
         # x-axis
-        s = "\t" + "\t".join([str(s) for s in range(1, self.n + 1)]) + "\n"
+        s = "\t" + "\t".join([str(node.getID()) for node in self.nodes]) + "\n"
         for i in range(self.n):
             # y-axis
             row = str(i + 1)
             for j in range(self.n):
-                row += "\t" + str(self.storage[j][i])
+                row += "\t" + str(self.adjacency[j][i])
             s += row + "\n"
         return s
 
-    def addNode(self, x, content):
-        self.storage[x][x] = content
+    def addNode(self, x, node):
+        self.adjacency[x][x] = 1
+        self.nodes[x] = node
 
-    def connectNodes(self, x1, y1, x2, y2):
-        self.storage
+    def connectNodes(self, x, y):
+        self.adjacency[y][x] = 1
+        self.adjacency[x][y] = 1
 
 
 class UndirectedAcyclicGraph(AdjacencyMatrix):
@@ -42,15 +59,13 @@ class UndirectedAcyclicGraph(AdjacencyMatrix):
 
 
 class Map(UndirectedAcyclicGraph):
-    """The map visualizes the undirected acyclic graph filled with rooms
-       as a 2D roguelike dungeon"""
+    """The map creates a cartesian map out of an undirected acyclic graph"""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def addRoom(self, x):
-        newRoom = Room()
-        self.addNode(x, newRoom)
+        self.addNode(x, Room(x))
 
     def underlyingMatrixToStr(self):
         return super().__str__()
@@ -65,15 +80,14 @@ class Dungeon():
         self.Y = dungeonConfig["Y"]
         self.size = self.X * self.Y
 
-        self.map = Map(self.X * self.Y)
+        self.map = Map(self.size)
 
         self.generateRooms()
 
     def generateRooms(self):
         for i in range(self.size):
             for j in range(self.size):
-                if random.uniform(0, 100) < 30:
-                    self.map.addRoom(i)
+                self.map.addRoom(i)
 
     def __str__(self):
         s = "I am a dungeon of {x}x{y}\n".format(x=self.X, y=self.Y)
@@ -85,13 +99,14 @@ class Dungeon():
 
 
 # the Room is a node
-class Room():
-    def __init__(self):
+class Room(Node):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.width = 5
         self.height = 5
 
     def __str__(self):
-        return "1"
+        return "room"
 
 
 dungeon = Dungeon(dungeonConfig)
