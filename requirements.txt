@@ -1,0 +1,14 @@
+Dungeon bestaat uit X * Y kamers, de X en Y component zijn instelbaar in de game door de gebruiker.
+De dungeon wordt random geïnitialiseerd met kamers, hallways en tegenstanders, maar alle kamers moeten te bezoeken zijn.
+Elke kamer kan een tegenstander bevatten (bijvoorbeeld van level 0 tot en met level 9).
+Er is een mogelijkheid om in de game het start- en eindpunt in de dungeon te wijzigen.
+Het is mogelijk om de Dungeon te tonen op het scherm. Hierin is te zien:
+    Waar de kamers zijn.
+    Waar het start- en eindpunt is.
+    Wat voor level een tegenstader in een kamer heeft.
+    Waar de hallways zitten tussen de kamers.
+    Of de hallways intact of ingestort zijn.
+    Een manier om aan te geven of een kamer bezocht is.
+    Een manier om aan te geven of een kamer deel is van de kortste/goedkoopste route.
+    Dit alles het lieftste in één overzichtelijk kaartje.
+Via commando's moet ik de talisman (Week 5, BFS), handgranaat (Week 5, MST) en het kompas (Week 6, Dijkstra) kunnen gebruiken.
