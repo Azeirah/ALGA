@@ -13,7 +13,7 @@ class Node():
 # http://www.algolist.net/Data_structures/Graph/Internal_representation
 class AdjacencyMatrix():
     def __init__(self, amountOfNodes):
-        self.n = amountOfNodes
+        self.amountOfNodes = amountOfNodes
         # initializes an empty array of size `n`
         self.nodes = [None] * amountOfNodes
 
@@ -23,13 +23,16 @@ class AdjacencyMatrix():
                      for x in range(amountOfNodes)]
         )
 
+    def getAmountofNodes(self):
+        return self.amountOfNodes
+
     def __str__(self):
         # x-axis
         s = "\t" + "\t".join([str(node.getID()) for node in self.nodes]) + "\n"
-        for i in range(self.n):
+        for i in range(self.amountOfNodes):
             # y-axis
             row = str(i + 1)
-            for j in range(self.n):
+            for j in range(self.amountOfNodes):
                 row += "\t" + str(self.adjacency[j][i])
             s += row + "\n"
         return s

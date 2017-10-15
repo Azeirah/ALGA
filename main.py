@@ -26,6 +26,11 @@ class Map(UndirectedAcyclicGraph):
     def underlyingMatrixToStr(self):
         return super().__str__()
 
+    def generateRooms(self):
+        for i in range(self.getAmountofNodes()):
+            for j in range(self.getAmountofNodes()):
+                self.addRoom(i)
+
     def __str__(self):
         return "The map ~~TODO~~\n\n\n"
 
@@ -37,13 +42,7 @@ class Dungeon():
         self.size = self.X * self.Y
 
         self.map = Map(self.size)
-
-        self.generateRooms()
-
-    def generateRooms(self):
-        for i in range(self.size):
-            for j in range(self.size):
-                self.map.addRoom(i)
+        self.map.generateRooms()
 
     def __str__(self):
         s = "I am a dungeon of {x}x{y}\n".format(x=self.X, y=self.Y)
