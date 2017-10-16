@@ -84,7 +84,10 @@ class Dungeon():
     def __init__(self, dungeonConfig):
         self.config = dungeonConfig
 
-        self.map = Map(amountOfNodes=self.config["X"] * self.config["Y"], config=dungeonConfig)
+        self.map = Map(
+            amountOfNodes=self.config["X"] * self.config["Y"],
+            config=dungeonConfig
+        )
 
         self.map.generateRooms(self.config["X"], self.config["Y"])
 
