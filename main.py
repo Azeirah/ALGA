@@ -1,15 +1,14 @@
 from AdjacencyMatrix import AdjacencyMatrix, Node
-
+from pprint import pprint
 
 dungeonConfig = {
     # amount of rooms = X * Y
     "X": 5,
     "Y": 5,
-    "minimumCorridorLength": 4,
-    "maximumCorridorLength": None,  # not sure if this is necessary
-    "maximumRoomWidth": 6,
-    "maximumRoomHeight": 12,
-    "padding": 5,
+    "roomWidth": 5,
+    "roomHeight": 5,
+    "corridorLength": 3,
+    "padding": 5
 }
 
 
@@ -33,39 +32,53 @@ class Map(UndirectedAcyclicGraph):
 
         self.computeDungeonWidth()
         self.computeDungeonHeight()
+        self.initializeEmptyCells()
 
     def addRoom(self, x):
-        self.addNode(x, Room(x))
+        self.addNode(x, Room(ID=x, config=self.config))
 
     def underlyingMatrixToStr(self):
         return super().__str__()
 
-    def generateRooms(self, X, Y):
-        assert X * Y == self.getAmountofNodes()
+    def initializeEmptyCells(self):
+        self.theMap = []
+        for y in range(self.height):
+            row = []
+            for x in range(self.width):
+                row += "."
+            self.theMap.append(row)
 
+    def getCell(self, x, y):
+        """0-indexed"""
+        return self.theMap[y][x]
+
+    def setCell(self, x, y, content):
+        self.theMap[y][x] = content
+
+    def generateRooms(self, X, Y):
         currentRoomIdx = 0
         for x in range(X):
             for y in range(Y):
                 uninitializedRoom = self.nodes[currentRoomIdx]
-                uninitializedRoom
+                uninitializedRoom.place(x, y, self)
 
                 currentRoomIdx += 1
 
     def computeDungeonWidth(self):
         # how many cells `X` rooms will maximally occupy
-        maxRoomsWidth = self.config["X"] * self.config["maximumRoomWidth"]
+        maxRoomsWidth = self.config["X"] * self.config["roomWidth"]
         paddingWidth = 2 * self.config["padding"]
         corridorsWidth = \
-            (self.config["X"] - 1) * self.config["minimumCorridorLength"]
+            (self.config["X"] - 1) * self.config["corridorLength"]
 
         self.width = maxRoomsWidth + paddingWidth + corridorsWidth
 
     def computeDungeonHeight(self):
-        # how many cells `X` rooms will maximally occupy
-        maxRoomsHeight  = self.config["Y"] * self.config["maximumRoomHeight"]
+        # how many cells `Y` rooms will maximally occupy
+        maxRoomsHeight  = self.config["Y"] * self.config["roomHeight"]
         paddingHeight   = 2 * self.config["padding"]
         corridorsHeight = \
-            (self.config["Y"] - 1) * self.config["minimumCorridorLength"]
+            (self.config["Y"] - 1) * self.config["corridorLength"]
 
         self.height = maxRoomsHeight + paddingHeight + corridorsHeight
 
@@ -74,7 +87,7 @@ class Map(UndirectedAcyclicGraph):
         for y in range(self.height):
             row = ""
             for x in range(self.width):
-                row += ". "
+                row += self.getCell(x, y) + " "
             m += row + "\n"
 
         return m
@@ -105,10 +118,25 @@ class Dungeon():
 
 # the Room is a node
 class Room(Node):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, config, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.width = 5
-        self.height = 5
+        self.width = config["roomWidth"]
+        self.height = config["roomHeight"]
+        self.config = config
+
+    def place(self, x, y, dungeonMap):
+        """x and y arguments are in graph coordinates"""
+
+        self.x = x * self.width + \
+            x * self.config["corridorLength"] + \
+            self.config["padding"]
+        self.y = y * self.height + \
+            y * self.config["corridorLength"] + \
+            self.config["padding"]
+
+        for w in range(self.width):
+            for h in range(self.height):
+                dungeonMap.setCell(self.x + w, self.y + h, "X")
 
     def __str__(self):
         return "room"
