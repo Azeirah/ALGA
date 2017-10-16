@@ -1,14 +1,21 @@
 from AdjacencyMatrix import AdjacencyMatrix, Node
-from pprint import pprint
 
 dungeonConfig = {
     # amount of rooms = X * Y
     "X": 5,
     "Y": 5,
-    "roomWidth": 5,
-    "roomHeight": 5,
+    "roomWidth": 7,
+    "roomHeight": 7,
     "corridorLength": 3,
     "padding": 5
+}
+
+
+cellLookup = {
+    "wall": "*",
+    "empty": " ",
+    "path": ".",
+    "player": "O"
 }
 
 
@@ -45,7 +52,7 @@ class Map(UndirectedAcyclicGraph):
         for y in range(self.height):
             row = []
             for x in range(self.width):
-                row += "."
+                row += cellLookup["empty"]
             self.theMap.append(row)
 
     def getCell(self, x, y):
@@ -136,10 +143,17 @@ class Room(Node):
 
         for w in range(self.width):
             for h in range(self.height):
-                dungeonMap.setCell(self.x + w, self.y + h, "X")
+                x = self.x + w
+                y = self.y + h
 
-    def __str__(self):
-        return "room"
+                cell = cellLookup["path"]
+
+                if w == 0 or w == self.width - 1:
+                    cell = cellLookup["wall"]
+                if h == 0 or h == self.height - 1:
+                    cell = cellLookup["wall"]
+
+                dungeonMap.setCell(x, y, cell)
 
 
 dungeon = Dungeon(dungeonConfig)
