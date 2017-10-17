@@ -1,4 +1,10 @@
 from AdjacencyMatrix import AdjacencyMatrix, Node
+import random
+
+
+def percentageChance(percentage):
+    return random.random() < (percentage / 100)
+
 
 dungeonConfig = {
     # amount of rooms = X * Y
@@ -15,31 +21,100 @@ cellLookup = {
     "wall": "*",
     "empty": " ",
     "path": ".",
-    "player": "O"
+    "player": "♚",
+    "start": "S",
+    "end": "E"
 }
 
 
-class UndirectedAcyclicGraph(AdjacencyMatrix):
+class UndirectedUnweightedGraph(AdjacencyMatrix):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
 
-class Map(UndirectedAcyclicGraph):
-    """The map creates a cartesian map out of an undirected acyclic graph"""
+class Map(UndirectedUnweightedGraph):
+    """The map creates a 2d XY map out of an undirected acyclic graph"""
 
     def __init__(self, config, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.config = config
 
-        # Fills the graph with empty, locationless, sizeless rooms
+        # there is sequentiality inherent to these methods
+        # they need to be executed in this order,
+        # otherwise they don't make a lot of sense
+        # that's why they're private
+        self._initializeEmptyRooms()
+        self._computeDungeonWidth()
+        self._computeDungeonHeight()
+        self._initializeEmptyCells()
+        self._connectRooms()
+
+    def _initializeEmptyRooms(self):
+        """Fills the graph with empty, locationless, sizeless rooms"""
         for i in range(self.getAmountofNodes()):
             for j in range(self.getAmountofNodes()):
                 self.addRoom(i)
 
-        self.computeDungeonWidth()
-        self.computeDungeonHeight()
-        self.initializeEmptyCells()
+    def _getNeighbors(self, roomIdx):
+        nodes = self.getNodes()
+
+        neighbors = []
+
+
+
+        # left neighbor
+        try:
+            if nodes[roomIdx - 1] is not None:
+                neighbors.append(nodes[roomIdx - 1])
+        except Exception as e:
+            pass
+        # right neighbor
+        try:
+            if nodes[roomIdx + 1] is not None:
+                neighbors.append(nodes[roomIdx + 1])
+        except Exception as e:
+            pass
+        # upper neighbor
+        try:
+            if nodes[roomIdx + self.config["X"]] is not None:
+                neighbors.append(nodes[roomIdx + self.config["X"]])
+        except Exception as e:
+            pass
+        # lower neighbor
+        try:
+            if nodes[roomIdx - self.config["X"]] is not None:
+                neighbors.append(nodes[roomIdx - self.config["X"]])
+        except Exception as e:
+            pass
+
+        return neighbors
+
+    def _connectRooms(self):
+        """Connects rooms in the underlying adjacency matrix (graph)
+           constraints:
+           1. Each room may only be connected to direct XY-coordinate neighbors
+           2. Each room needs at least one connection
+           3. Need an unknown amount more than 15 pathways at minimum
+              requirements state that the grenade item should collapse 15 hallways (out of 5x5)
+              but there should still be a path from current location to end location
+           4. Cycles are required because the grenade item will collapse hallways
+              but there should still be a path from your current room to the stairway
+        """
+
+        # simple algorithm idea
+        # 1. for room in rooms
+        #     2. for neighbor in direct_neighbors(room)
+        #         if chance(20%)
+        #             connectRooms(room, neighbor)
+
+        CONNECTIONCHANCE = 20
+
+        for idx, room in enumerate(self.getNodes()):
+            for neighbor in self._getNeighbors(idx):
+                if percentageChance(CONNECTIONCHANCE):
+                    self.connectNodes(idx, neighbor.ID)
+
 
     def addRoom(self, x):
         self.addNode(x, Room(ID=x, config=self.config))
@@ -47,7 +122,7 @@ class Map(UndirectedAcyclicGraph):
     def underlyingMatrixToStr(self):
         return super().__str__()
 
-    def initializeEmptyCells(self):
+    def _initializeEmptyCells(self):
         self.theMap = []
         for y in range(self.height):
             row = []
@@ -62,7 +137,7 @@ class Map(UndirectedAcyclicGraph):
     def setCell(self, x, y, content):
         self.theMap[y][x] = content
 
-    def generateRooms(self, X, Y):
+    def placeRooms(self, X, Y):
         currentRoomIdx = 0
         for x in range(X):
             for y in range(Y):
@@ -71,7 +146,7 @@ class Map(UndirectedAcyclicGraph):
 
                 currentRoomIdx += 1
 
-    def computeDungeonWidth(self):
+    def _computeDungeonWidth(self):
         # how many cells `X` rooms will maximally occupy
         maxRoomsWidth = self.config["X"] * self.config["roomWidth"]
         paddingWidth = 2 * self.config["padding"]
@@ -80,7 +155,7 @@ class Map(UndirectedAcyclicGraph):
 
         self.width = maxRoomsWidth + paddingWidth + corridorsWidth
 
-    def computeDungeonHeight(self):
+    def _computeDungeonHeight(self):
         # how many cells `Y` rooms will maximally occupy
         maxRoomsHeight  = self.config["Y"] * self.config["roomHeight"]
         paddingHeight   = 2 * self.config["padding"]
@@ -109,7 +184,7 @@ class Dungeon():
             config=dungeonConfig
         )
 
-        self.map.generateRooms(self.config["X"], self.config["Y"])
+        self.map.placeRooms(self.config["X"], self.config["Y"])
 
     def __str__(self):
         s = "I am a dungeon of {x}x{y}\n".format(

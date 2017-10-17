@@ -26,6 +26,9 @@ class AdjacencyMatrix():
     def getAmountofNodes(self):
         return self.amountOfNodes
 
+    def getNodes(self):
+        return self.nodes
+
     def __str__(self):
         # x-axis
         s = "\t" + "\t".join([str(node.getID()) for node in self.nodes]) + "\n"
