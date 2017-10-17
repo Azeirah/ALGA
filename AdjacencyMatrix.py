@@ -34,7 +34,7 @@ class AdjacencyMatrix():
         s = "\t" + "\t".join([str(node.getID()) for node in self.nodes]) + "\n"
         for i in range(self.amountOfNodes):
             # y-axis
-            row = str(i + 1)
+            row = str(i)
             for j in range(self.amountOfNodes):
                 row += "\t" + str(self.adjacency[j][i])
             s += row + "\n"
