@@ -1,22 +1,24 @@
-class MapDrawer():
-    def __init__(self, map):
-        self.map = map
+def drawRect(fromX, fromY, width, height, content, map):
+    for w in range(width):
+        for h in range(height):
+            x = fromX + w
+            y = fromY + h
 
-    def drawRect(self, fromX, fromY, width, height, content):
-        for w in range(width):
-            for h in range(height):
-                x = fromX + w
-                y = fromY + h
+            map.setCell(x, y, content)
 
-                self.map.setCell(x, y, content)
+def drawHorizontalLine(fromX, toX, y, content, map):
+    """from x1 to x2 both inclusive
+       drawHorizontalLine(1, 5, 0, "X") -> .XXXXX """
 
-    def drawHorizontalLine(self, fromX, toX, y, content):
-        """from x1 to x2 both inclusive
-           drawHorizontalLine(1, 5, 0, "X") -> .XXXXX """
-        for x in range(fromX, toX + 1):
-            self.map.setCell(x, y, content)
+    distance = abs(fromX - toX)
+    if fromX > toX:
+        direction = 1
+    else:
+        direction = -1
+    for x in range(fromX, toX + 1):
+        map.setCell(x, y, content)
 
-    def drawVerticalLine(self, fromY, toY, x, content):
-        """from y1 to y2 both inclusive"""
-        for y in range(fromY, toY + 1):
-            self.map.setCell(x, y, content)
+def drawVerticalLine(fromY, toY, x, content, map):
+    """from y1 to y2 both inclusive"""
+    for y in range(fromY, toY + 1):
+        map.setCell(x, y, content)

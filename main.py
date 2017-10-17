@@ -1,5 +1,6 @@
 from AdjacencyMatrix import AdjacencyMatrix, Node
 import random
+import mapDrawing
 
 
 def percentageChance(percentage):
@@ -61,32 +62,22 @@ class Map(UndirectedUnweightedGraph):
 
         neighbors = []
 
-
-
         # left neighbor
-        try:
-            if nodes[roomIdx - 1] is not None:
-                neighbors.append(nodes[roomIdx - 1])
-        except Exception as e:
-            pass
+        leftIdx = roomIdx - 1
+        if 0 < leftIdx < self.amountOfNodes:
+            neighbors.append(nodes[leftIdx])
         # right neighbor
-        try:
-            if nodes[roomIdx + 1] is not None:
-                neighbors.append(nodes[roomIdx + 1])
-        except Exception as e:
-            pass
+        rightIdx = roomIdx + 1
+        if 0 < rightIdx < self.amountOfNodes:
+            neighbors.append(nodes[rightIdx])
         # upper neighbor
-        try:
-            if nodes[roomIdx + self.config["X"]] is not None:
-                neighbors.append(nodes[roomIdx + self.config["X"]])
-        except Exception as e:
-            pass
+        upperIdx = roomIdx + self.config["X"]
+        if 0 < upperIdx < self.amountOfNodes:
+            neighbors.append(nodes[upperIdx])
         # lower neighbor
-        try:
-            if nodes[roomIdx - self.config["X"]] is not None:
-                neighbors.append(nodes[roomIdx - self.config["X"]])
-        except Exception as e:
-            pass
+        lowerIdx = roomIdx - self.config["X"]
+        if 0 < lowerIdx < self.amountOfNodes:
+            neighbors.append(nodes[lowerIdx])
 
         return neighbors
 
@@ -96,25 +87,42 @@ class Map(UndirectedUnweightedGraph):
            1. Each room may only be connected to direct XY-coordinate neighbors
            2. Each room needs at least one connection
            3. Need an unknown amount more than 15 pathways at minimum
-              requirements state that the grenade item should collapse 15 hallways (out of 5x5)
-              but there should still be a path from current location to end location
-           4. Cycles are required because the grenade item will collapse hallways
-              but there should still be a path from your current room to the stairway
+              requirements state that the grenade item
+              should collapse 15 hallways (out of 5x5)
+              but there should still be a path
+              from current location to end location
+           4. Cycles are required because the grenade
+              item will collapse hallways
+              but there should still be a path
+              from your current room to the stairway
+
+           Last update to this description: 17-10-2017 14:47:39
+           The current implementation of this algorithm fulfills
+           constraints 1 and 2,
+
+           constraint 3 is very likely to be met
+
+           constraint 4 is unknown atm
+
+           20% * ~200connections ~= 40 on average, should be slightly less
         """
 
-        # simple algorithm idea
-        # 1. for room in rooms
-        #     2. for neighbor in direct_neighbors(room)
-        #         if chance(20%)
-        #             connectRooms(room, neighbor)
-
+        # affects constraint#3 and constraint#4 statistically
         CONNECTIONCHANCE = 20
 
         for idx, room in enumerate(self.getNodes()):
-            for neighbor in self._getNeighbors(idx):
+            neighbors = self._getNeighbors(idx)
+            print("All neighbors of {idx}:".format(idx=idx))
+            for ID in map(lambda n: n.ID, neighbors):
+                print(ID)
+
+            # constraint#2, min one connection
+            guaranteedConnection = random.choice(neighbors)
+            self.connectNodes(idx, guaranteedConnection.ID)
+
+            for neighbor in neighbors:
                 if percentageChance(CONNECTIONCHANCE):
                     self.connectNodes(idx, neighbor.ID)
-
 
     def addRoom(self, x):
         self.addNode(x, Room(ID=x, config=self.config))
@@ -142,9 +150,15 @@ class Map(UndirectedUnweightedGraph):
         for x in range(X):
             for y in range(Y):
                 uninitializedRoom = self.nodes[currentRoomIdx]
-                uninitializedRoom.place(x, y, self)
+                uninitializedRoom.placeSelf(x, y, self)
 
                 currentRoomIdx += 1
+
+    def placeConnections(self):
+        nodes = self.getNodes()
+        for id1, id2 in self.getAllConnectedCells():
+            neighbor = nodes[id2]
+            nodes[id1].connectSelfToRoom(neighbor, self)
 
     def _computeDungeonWidth(self):
         # how many cells `X` rooms will maximally occupy
@@ -185,6 +199,7 @@ class Dungeon():
         )
 
         self.map.placeRooms(self.config["X"], self.config["Y"])
+        self.map.placeConnections()
 
     def __str__(self):
         s = "I am a dungeon of {x}x{y}\n".format(
@@ -206,20 +221,24 @@ class Room(Node):
         self.height = config["roomHeight"]
         self.config = config
 
-    def place(self, x, y, dungeonMap):
-        """x and y arguments are in graph coordinates"""
+    def placeSelf(self, x, y, dungeonMap):
+        """Operates in map-domain, exists in graph-domain
+           x and y arguments are in graph coordinates"""
 
-        self.x = x * self.width + \
+        self.roomX = x
+        self.roomY = y
+
+        self.mapX = x * self.width + \
             x * self.config["corridorLength"] + \
             self.config["padding"]
-        self.y = y * self.height + \
+        self.mapY = y * self.height + \
             y * self.config["corridorLength"] + \
             self.config["padding"]
 
         for w in range(self.width):
             for h in range(self.height):
-                x = self.x + w
-                y = self.y + h
+                x = self.mapX + w
+                y = self.mapY + h
 
                 cell = cellLookup["path"]
 
@@ -229,6 +248,99 @@ class Room(Node):
                     cell = cellLookup["wall"]
 
                 dungeonMap.setCell(x, y, cell)
+
+    def getConnectorCoordinates(self, direction):
+        """
+               b
+           ****a****
+           *       *
+        r  l       r  l
+           *       *
+           ****b****
+               a
+
+        gives back the relative-to-map coordinate
+        for the requested location,
+        (a)bove, (r)ight, (b)elow or (l)eft
+
+        look at the letters in the room to choose what you want
+        the letters on the outside are only to make it easy
+        to determine relative directions
+        """
+
+        # self.mapX and self.mapY indicate top-left of the room
+        halfWidth = self.width // 2
+        halfHeight = self.height // 2
+
+        endWidth = self.width - 1
+        endHeight = self.height - 1
+
+        if direction == "a":
+            return (
+                self.mapX + halfWidth,
+                self.mapY
+            )
+        if direction == "r":
+            return (
+                self.mapX + endWidth,
+                self.mapY + halfHeight
+            )
+        if direction == "b":
+            return (
+                self.mapX + halfWidth,
+                self.mapY + endHeight
+            )
+        if direction == "l":
+            return (
+                self.mapX,
+                self.mapY + halfHeight
+            )
+
+    def connectSelfToRoom(self, neighbor, dungeonMap):
+        """Operates in map-domain, exists in graph-domain"""
+
+        # case 1, neighbor is above self
+        if self.roomY > neighbor.roomY and \
+           self.roomX == neighbor.roomX:
+            ownConnectorCoords = self.getConnectorCoordinates("a")
+            neighborConnectorCoords = neighbor.getConnectorCoordinates("b")
+            mapDrawing.drawVerticalLine(
+                neighborConnectorCoords[1], ownConnectorCoords[1],
+                ownConnectorCoords[0],
+                "a",
+                dungeonMap
+            )
+
+        # case 2, neighbor is left of self
+        if self.roomY == neighbor.roomY and \
+           self.roomX > neighbor.roomX:
+            ownConnectorCoords = self.getConnectorCoordinates("l")
+            neighborConnectorCoords = neighbor.getConnectorCoordinates("r")
+            dx = abs(ownConnectorCoords[0] - neighborConnectorCoords[0])
+            if dx > 5:
+                print("drawing from")
+                print(ownConnectorCoords)
+                print("to")
+                print(neighborConnectorCoords)
+                print("dx = {dx}".format(dx=dx))
+                print("IDS are id1={id1}, id2={id2}".format(id1=self.ID, id2=neighbor.ID))
+                print()
+            mapDrawing.drawHorizontalLine(
+                neighborConnectorCoords[0], ownConnectorCoords[0],
+                ownConnectorCoords[1],
+                "l",
+                dungeonMap
+            )
+
+        # case 3, neighbor is right of self
+        if self.roomY == neighbor.roomY and \
+           self.roomX < neighbor.roomX:
+           pass
+
+        # case 4, neighbor is below self
+        if self.roomY < neighbor.roomY and \
+           self.roomX == neighbor.roomX:
+           pass
 
 
 dungeon = Dungeon(dungeonConfig)

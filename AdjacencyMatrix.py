@@ -46,3 +46,15 @@ class AdjacencyMatrix():
     def connectNodes(self, x, y):
         self.adjacency[y][x] = 1
         self.adjacency[x][y] = 1
+
+    def getAllConnectedCells(self):
+        """Gives you a list of connected cell tuples.
+           Each tuple contains the ID's of two connected cells."""
+        adjacents = []
+
+        for y in range(self.amountOfNodes):
+            for x in range(self.amountOfNodes):
+                if self.adjacency[y][x] == 1:
+                    adjacents.append((x, y))
+
+        return adjacents
