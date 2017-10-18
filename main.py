@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
 from AdjacencyMatrix import AdjacencyMatrix, Node
 import random
 import mapDrawing
+from utilities import fileprint
 
 
 def percentageChance(percentage):
@@ -11,8 +13,8 @@ dungeonConfig = {
     # amount of rooms = X * Y
     "X": 5,
     "Y": 5,
-    "roomWidth": 7,
-    "roomHeight": 7,
+    "roomWidth": 5,
+    "roomHeight": 5,
     "corridorLength": 3,
     "padding": 5
 }
@@ -64,19 +66,19 @@ class Map(UndirectedUnweightedGraph):
 
         # left neighbor
         leftIdx = roomIdx - 1
-        if 0 < leftIdx < self.amountOfNodes:
+        if 0 <= leftIdx < self.amountOfNodes:
             neighbors.append(nodes[leftIdx])
         # right neighbor
         rightIdx = roomIdx + 1
-        if 0 < rightIdx < self.amountOfNodes:
+        if 0 <= rightIdx < self.amountOfNodes:
             neighbors.append(nodes[rightIdx])
         # upper neighbor
         upperIdx = roomIdx + self.config["X"]
-        if 0 < upperIdx < self.amountOfNodes:
+        if 0 <= upperIdx < self.amountOfNodes:
             neighbors.append(nodes[upperIdx])
         # lower neighbor
         lowerIdx = roomIdx - self.config["X"]
-        if 0 < lowerIdx < self.amountOfNodes:
+        if 0 <= lowerIdx < self.amountOfNodes:
             neighbors.append(nodes[lowerIdx])
 
         return neighbors
@@ -249,7 +251,9 @@ class Room(Node):
 
                 dungeonMap.setCell(x, y, cell)
 
-        dungeonMap.setCell(self.mapX, self.mapY, str(self.ID))
+        ID = str(self.ID)
+        for i, s in enumerate(ID):
+            dungeonMap.setCell(self.mapX + i, self.mapY, s)
 
     def getConnectorCoordinates(self, direction):
         """
@@ -363,5 +367,6 @@ class Room(Node):
 
 
 dungeon = Dungeon(dungeonConfig)
-print(dungeon)
-print(dungeon.map.underlyingMatrixToStr())
+fileprint("out/dungeon.txt", dungeon)
+fileprint("out/matrix.txt", dungeon.map.underlyingMatrixToStr())
+print("hi")
