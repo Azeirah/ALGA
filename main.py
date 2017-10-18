@@ -171,8 +171,8 @@ class Map(UndirectedUnweightedGraph):
 
     def _computeDungeonHeight(self):
         # how many cells `Y` rooms will maximally occupy
-        maxRoomsHeight  = self.config["Y"] * self.config["roomHeight"]
-        paddingHeight   = 2 * self.config["padding"]
+        maxRoomsHeight = self.config["Y"] * self.config["roomHeight"]
+        paddingHeight = 2 * self.config["padding"]
         corridorsHeight = \
             (self.config["Y"] - 1) * self.config["corridorLength"]
 
@@ -323,7 +323,10 @@ class Room(Node):
                 print("to")
                 print(neighborConnectorCoords)
                 print("dx = {dx}".format(dx=dx))
-                print("IDS are id1={id1}, id2={id2}".format(id1=self.ID, id2=neighbor.ID))
+                print("IDS are id1={id1}, id2={id2}".format(
+                    id1=self.ID,
+                    id2=neighbor.ID
+                ))
                 print()
             mapDrawing.drawHorizontalLine(
                 neighborConnectorCoords[0], ownConnectorCoords[0],
@@ -335,12 +338,12 @@ class Room(Node):
         # case 3, neighbor is right of self
         if self.roomY == neighbor.roomY and \
            self.roomX < neighbor.roomX:
-           pass
+            pass
 
         # case 4, neighbor is below self
         if self.roomY < neighbor.roomY and \
            self.roomX == neighbor.roomX:
-           pass
+            pass
 
 
 dungeon = Dungeon(dungeonConfig)
