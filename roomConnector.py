@@ -1,25 +1,42 @@
 from dfs import dfs
-from graphUtils import countGridEdges
+from graphUtils import countGridEdges, isConnectedGraph
+import random
 
-CUTPERCENTAGE = .1
+CUTPERCENTAGE = .3
 
-def roomConnector():
+def roomConnector(graph):
     """Connects rooms in the underlying adjacency matrix (graph)
        constraints:
        1. Each room may only be connected to direct XY-coordinate neighbors
        2. Each room must be reachable
 
-       Last update to this description: 17-10-2017 14:47:39
-       The current implementation of this algorithm fulfills
-       constraints 1 and 2,
+       The algorithm to reach these goals is far from perfect, but it should work
+       the main problems are
 
-       constraint 3 is very likely to be met
+       1. Unpredictable time-complexity due to randomness
+       2. Uses tons and tons of memory due to copying, copying of graphs
+       3. Probably fairly slow as well
 
-       constraint 4 is unknown atm
+       BUT. It works, and it works fairly robustly
 
-       20% * ~200connections ~= 40 on average, should be slightly less
+       (manually tested @Thursday - 19 October 2017)
+       for
+       Graph(X=4, Y=8),
+       Graph(X=7, Y=2)
+
+       where X and Y are the dungeonConfigs
     """
 
+    numEdges = countGridEdges(graph.config["X"], graph.config["Y"])
+    edgesToCut = int(numEdges * CUTPERCENTAGE)
+    edges = graph.getAllEdges()
 
-    numEdges = countGridEdges()
-    edgesToCut = numEdges * CUTPERCENTAGE
+    while edgesToCut:
+        edge = random.choice(list(edges))
+
+        gcopy = graph.deepCopy()
+        gcopy.disconnectNodes(edge[0], edge[1])
+
+        if isConnectedGraph(gcopy):
+            graph.disconnectNodes(edge[0], edge[1])
+            edgesToCut -= 1

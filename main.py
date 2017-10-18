@@ -7,8 +7,8 @@ from utilities import fileprint, percentageChance
 
 dungeonConfig = {
     # amount of rooms = X * Y
-    "X": 7,
-    "Y": 2,
+    "X": 5,
+    "Y": 5,
     "roomWidth": 5,
     "roomHeight": 5,
     "corridorLength": 3,
@@ -109,23 +109,20 @@ class Map(UndirectedUnweightedGraph):
         """
 
         # affects constraint#3 and constraint#4 statistically
-        CONNECTIONCHANCE = 20
+        from roomConnector import roomConnector
 
         for idx, room in enumerate(self.getNodes()):
             neighbors = self._getNeighbors(idx)
             # uncomment to manually check if neighbors are correct
             # check it with the map
             # print("All neighbors of {idx}:".format(idx=idx))
-            for ID in map(lambda n: n.ID, neighbors):
-                print(ID)
-
-            # constraint#2, min one connection
-            guaranteedConnection = random.choice(neighbors)
-            self.connectNodes(idx, guaranteedConnection.ID)
+            # for ID in map(lambda n: n.ID, neighbors):
+            #     print(ID)
 
             for neighbor in neighbors:
-                if percentageChance(CONNECTIONCHANCE):
-                    self.connectNodes(idx, neighbor.ID)
+                self.connectNodes(idx, neighbor.ID)
+
+        roomConnector(self)
 
     def addRoom(self, x):
         self.addNode(x, Room(ID=x, config=self.config))
@@ -159,7 +156,7 @@ class Map(UndirectedUnweightedGraph):
 
     def placeConnections(self):
         nodes = self.getNodes()
-        for id1, id2 in self.getAllConnectedNodes():
+        for id1, id2 in self.getAllEdges():
             neighbor = nodes[id2]
             nodes[id1].connectSelfToRoom(neighbor, self)
 

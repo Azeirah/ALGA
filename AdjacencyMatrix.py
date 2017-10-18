@@ -54,7 +54,7 @@ class AdjacencyMatrix():
         self.adjacency[y][x] = 0
         self.adjacency[x][y] = 0
 
-    def getAllConnectedNodes(self):
+    def getAllEdges(self):
         """Gives you an iterable of connected node tuples.
            Each tuple contains the ID's of two connected cells."""
         adjacents = set()
@@ -82,7 +82,7 @@ class AdjacencyMatrix():
         for node in self.nodes:
             copy.addNode(node.ID, node.deepCopy())
 
-        for x, y in self.getAllConnectedNodes():
+        for x, y in self.getAllEdges():
             copy.connectNodes(x, y)
 
         return copy

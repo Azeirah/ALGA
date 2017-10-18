@@ -1,14 +1,15 @@
-High-level goals
+High-level goals to get a decent grade
 
-[ ] Generate graph
-[ ] Implement Minimum-spanning tree (prim or kruskal) (using visitor pattern)
+[x] Generate graph
+    [x] Implement depth-first search
+    [x] Make the graph copyable
+    [x] Cut a preset number of edges from the graph, leave an edge alone if it's a bridge.
+        dfs can be used to determine whether an edge is a bridge or not
+[ ] Implement grenade requirement
+    [ ] Implement Minimum-spanning tree (prim or kruskal) (using visitor pattern)
+    [ ] Add start and end to graph
 [ ] Implement Breadth-first search (using visitor pattern)
 [ ] Implement Dijkstra's (using visitor pattern)
 [ ] Decorate map to look like a game
 
 
-[ ] Generate graph
-    [x] Implement depth-first search
-    [x] Make the graph copyable
-    [ ] Cut a preset number of edges from the graph, leave an edge alone if it's a bridge.
-        dfs can be used to determine whether an edge is a bridge or not
