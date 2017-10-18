@@ -249,6 +249,8 @@ class Room(Node):
 
                 dungeonMap.setCell(x, y, cell)
 
+        dungeonMap.setCell(self.mapX, self.mapY, str(self.ID))
+
     def getConnectorCoordinates(self, direction):
         """
                b
@@ -338,12 +340,26 @@ class Room(Node):
         # case 3, neighbor is right of self
         if self.roomY == neighbor.roomY and \
            self.roomX < neighbor.roomX:
-            pass
+            ownConnectorCoords = self.getConnectorCoordinates("r")
+            neighborConnectorCoords = neighbor.getConnectorCoordinates("l")
+            mapDrawing.drawHorizontalLine(
+                ownConnectorCoords[0], neighborConnectorCoords[0],
+                ownConnectorCoords[1],
+                "r",
+                dungeonMap
+            )
 
         # case 4, neighbor is below self
         if self.roomY < neighbor.roomY and \
            self.roomX == neighbor.roomX:
-            pass
+            ownConnectorCoords = self.getConnectorCoordinates("b")
+            neighborConnectorCoords = neighbor.getConnectorCoordinates("a")
+            mapDrawing.drawVerticalLine(
+                ownConnectorCoords[1], neighborConnectorCoords[1],
+                ownConnectorCoords[0],
+                "b",
+                dungeonMap
+            )
 
 
 dungeon = Dungeon(dungeonConfig)
