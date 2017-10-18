@@ -50,6 +50,10 @@ class AdjacencyMatrix():
         self.adjacency[y][x] = 1
         self.adjacency[x][y] = 1
 
+    def disconnectNodes(self, x, y):
+        self.adjacency[y][x] = 0
+        self.adjacency[x][y] = 0
+
     def getAllConnectedNodes(self):
         """Gives you an iterable of connected node tuples.
            Each tuple contains the ID's of two connected cells."""
