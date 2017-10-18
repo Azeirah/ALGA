@@ -249,6 +249,8 @@ class Room(Node):
 
                 dungeonMap.setCell(x, y, cell)
 
+        dungeonMap.setCell(self.mapX, self.mapY, str(self.ID))
+
     def getConnectorCoordinates(self, direction):
         """
                b
@@ -316,15 +318,6 @@ class Room(Node):
            self.roomX > neighbor.roomX:
             ownConnectorCoords = self.getConnectorCoordinates("l")
             neighborConnectorCoords = neighbor.getConnectorCoordinates("r")
-            dx = abs(ownConnectorCoords[0] - neighborConnectorCoords[0])
-            if dx > 5:
-                print("drawing from")
-                print(ownConnectorCoords)
-                print("to")
-                print(neighborConnectorCoords)
-                print("dx = {dx}".format(dx=dx))
-                print("IDS are id1={id1}, id2={id2}".format(id1=self.ID, id2=neighbor.ID))
-                print()
             mapDrawing.drawHorizontalLine(
                 neighborConnectorCoords[0], ownConnectorCoords[0],
                 ownConnectorCoords[1],
@@ -335,12 +328,26 @@ class Room(Node):
         # case 3, neighbor is right of self
         if self.roomY == neighbor.roomY and \
            self.roomX < neighbor.roomX:
-           pass
+            ownConnectorCoords = self.getConnectorCoordinates("r")
+            neighborConnectorCoords = neighbor.getConnectorCoordinates("l")
+            mapDrawing.drawHorizontalLine(
+                ownConnectorCoords[0], neighborConnectorCoords[0],
+                ownConnectorCoords[1],
+                "r",
+                dungeonMap
+            )
 
         # case 4, neighbor is below self
         if self.roomY < neighbor.roomY and \
            self.roomX == neighbor.roomX:
-           pass
+            ownConnectorCoords = self.getConnectorCoordinates("b")
+            neighborConnectorCoords = neighbor.getConnectorCoordinates("a")
+            mapDrawing.drawVerticalLine(
+                ownConnectorCoords[1], neighborConnectorCoords[1],
+                ownConnectorCoords[0],
+                "b",
+                dungeonMap
+            )
 
 
 dungeon = Dungeon(dungeonConfig)
