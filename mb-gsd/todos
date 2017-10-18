@@ -1,2 +1,14 @@
-[ ] figure out how to initialize the map
-[ ] figure out how to convert a graph to a roguelike dungeon
+High-level goals
+
+[ ] Generate graph
+[ ] Implement Minimum-spanning tree (prim or kruskal) (using visitor pattern)
+[ ] Implement Breadth-first search (using visitor pattern)
+[ ] Implement Dijkstra's (using visitor pattern)
+[ ] Decorate map to look like a game
+
+
+[ ] Generate graph
+    [x] Implement depth-first search
+    [x] Make the graph copyable
+    [ ] Cut a preset number of edges from the graph, leave an edge alone if it's a bridge.
+        dfs can be used to determine whether an edge is a bridge or not

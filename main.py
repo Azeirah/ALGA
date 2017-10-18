@@ -2,11 +2,7 @@
 from AdjacencyMatrix import AdjacencyMatrix, Node
 import random
 import mapDrawing
-from utilities import fileprint
-
-
-def percentageChance(percentage):
-    return random.random() < (percentage / 100)
+from utilities import fileprint, percentageChance
 
 
 dungeonConfig = {
@@ -163,7 +159,7 @@ class Map(UndirectedUnweightedGraph):
 
     def placeConnections(self):
         nodes = self.getNodes()
-        for id1, id2 in self.getAllConnectedCells():
+        for id1, id2 in self.getAllConnectedNodes():
             neighbor = nodes[id2]
             nodes[id1].connectSelfToRoom(neighbor, self)
 

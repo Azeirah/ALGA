@@ -8,6 +8,9 @@ class Node():
     def __str__(self):
         return str(self.ID)
 
+    def deepCopy(self):
+        return Node(self.ID)
+
 
 # adjency matrix info
 # http://www.algolist.net/Data_structures/Graph/Internal_representation
@@ -15,7 +18,7 @@ class AdjacencyMatrix():
     def __init__(self, amountOfNodes):
         self.amountOfNodes = amountOfNodes
         # initializes an empty array of size `n`
-        self.nodes = [None] * amountOfNodes
+        self.nodes = [Node(i) for i in range(amountOfNodes)]
 
         # fairly unreadable way to generate a 2d array in python
         self.adjacency = list(
@@ -47,14 +50,46 @@ class AdjacencyMatrix():
         self.adjacency[y][x] = 1
         self.adjacency[x][y] = 1
 
-    def getAllConnectedCells(self):
-        """Gives you a list of connected cell tuples.
+    def getAllConnectedNodes(self):
+        """Gives you an iterable of connected node tuples.
            Each tuple contains the ID's of two connected cells."""
-        adjacents = []
+        adjacents = set()
 
         for y in range(self.amountOfNodes):
             for x in range(self.amountOfNodes):
                 if self.adjacency[y][x] == 1:
-                    adjacents.append((x, y))
+                    adjacents.add((x, y))
 
         return adjacents
+
+    def getNodesConnectedTo(self, node):
+        """Gives you a list of nodes connected to the given node"""
+        connections = set()
+
+        for y in range(self.amountOfNodes):
+            if self.adjacency[y][node.getID()] == 1:
+                connections.add(self.nodes[y])
+
+        return connections
+
+    def deepCopy(self):
+        copy = AdjacencyMatrix(self.amountOfNodes)
+
+        for node in self.nodes:
+            copy.addNode(node.ID, node.deepCopy())
+
+        for x, y in self.getAllConnectedNodes():
+            copy.connectNodes(x, y)
+
+        return copy
+
+
+if __name__ == "__main__":
+    g1 = AdjacencyMatrix(5)
+    g1.connectNodes(1, 3)
+    g1.connectNodes(2, 4)
+    g1.connectNodes(2, 3)
+
+    print("testcase for deepcopy")
+    print("g1 should equal g1's deepcopy")
+    print(str(g1.deepCopy()) == str(g1))
