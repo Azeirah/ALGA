@@ -11,19 +11,20 @@ def percentageChance(percentage):
 
 dungeonConfig = {
     # amount of rooms = X * Y
-    "X": 5,
-    "Y": 5,
+    "X": 7,
+    "Y": 2,
     "roomWidth": 5,
     "roomHeight": 5,
     "corridorLength": 3,
-    "padding": 5
+    "padding": 5,
+    "showID": True
 }
 
 
 cellLookup = {
     "wall": "*",
     "empty": " ",
-    "path": ".",
+    "path": "·",
     "player": "♚",
     "start": "S",
     "end": "E"
@@ -66,11 +67,13 @@ class Map(UndirectedUnweightedGraph):
 
         # left neighbor
         leftIdx = roomIdx - 1
-        if 0 <= leftIdx < self.amountOfNodes:
+        if 0 <= leftIdx < self.amountOfNodes and \
+            roomIdx % self.config["X"] != 0:
             neighbors.append(nodes[leftIdx])
         # right neighbor
         rightIdx = roomIdx + 1
-        if 0 <= rightIdx < self.amountOfNodes:
+        if 0 <= rightIdx < self.amountOfNodes and \
+            rightIdx % self.config["X"] != 0:
             neighbors.append(nodes[rightIdx])
         # upper neighbor
         upperIdx = roomIdx + self.config["X"]
@@ -114,7 +117,9 @@ class Map(UndirectedUnweightedGraph):
 
         for idx, room in enumerate(self.getNodes()):
             neighbors = self._getNeighbors(idx)
-            print("All neighbors of {idx}:".format(idx=idx))
+            # uncomment to manually check if neighbors are correct
+            # check it with the map
+            # print("All neighbors of {idx}:".format(idx=idx))
             for ID in map(lambda n: n.ID, neighbors):
                 print(ID)
 
@@ -149,8 +154,8 @@ class Map(UndirectedUnweightedGraph):
 
     def placeRooms(self, X, Y):
         currentRoomIdx = 0
-        for x in range(X):
-            for y in range(Y):
+        for y in range(Y):
+            for x in range(X):
                 uninitializedRoom = self.nodes[currentRoomIdx]
                 uninitializedRoom.placeSelf(x, y, self)
 
@@ -251,9 +256,10 @@ class Room(Node):
 
                 dungeonMap.setCell(x, y, cell)
 
-        ID = str(self.ID)
-        for i, s in enumerate(ID):
-            dungeonMap.setCell(self.mapX + i, self.mapY, s)
+        if self.config["showID"]:
+            ID = str(self.ID)
+            for i, s in enumerate(ID):
+                dungeonMap.setCell(self.mapX + i - 1, self.mapY - 1, s)
 
     def getConnectorCoordinates(self, direction):
         """
@@ -313,7 +319,7 @@ class Room(Node):
             mapDrawing.drawVerticalLine(
                 neighborConnectorCoords[1], ownConnectorCoords[1],
                 ownConnectorCoords[0],
-                "a",
+                cellLookup["path"],
                 dungeonMap
             )
 
@@ -322,22 +328,10 @@ class Room(Node):
            self.roomX > neighbor.roomX:
             ownConnectorCoords = self.getConnectorCoordinates("l")
             neighborConnectorCoords = neighbor.getConnectorCoordinates("r")
-            dx = abs(ownConnectorCoords[0] - neighborConnectorCoords[0])
-            if dx > 5:
-                print("drawing from")
-                print(ownConnectorCoords)
-                print("to")
-                print(neighborConnectorCoords)
-                print("dx = {dx}".format(dx=dx))
-                print("IDS are id1={id1}, id2={id2}".format(
-                    id1=self.ID,
-                    id2=neighbor.ID
-                ))
-                print()
             mapDrawing.drawHorizontalLine(
                 neighborConnectorCoords[0], ownConnectorCoords[0],
                 ownConnectorCoords[1],
-                "l",
+                cellLookup["path"],
                 dungeonMap
             )
 
@@ -349,7 +343,7 @@ class Room(Node):
             mapDrawing.drawHorizontalLine(
                 ownConnectorCoords[0], neighborConnectorCoords[0],
                 ownConnectorCoords[1],
-                "r",
+                cellLookup["path"],
                 dungeonMap
             )
 
@@ -361,7 +355,7 @@ class Room(Node):
             mapDrawing.drawVerticalLine(
                 ownConnectorCoords[1], neighborConnectorCoords[1],
                 ownConnectorCoords[0],
-                "b",
+                cellLookup["path"],
                 dungeonMap
             )
 
