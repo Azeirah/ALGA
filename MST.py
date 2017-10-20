@@ -14,6 +14,7 @@ import random
 # new Graph is now G - ¬P, ~= remove all edges that don't interfere with P
 
 class DisjointSet:
+    """Implementation based on Wikipedia, I don't pretend to understand it very well..."""
     def __init__(self):
         self.parent = {}
         self.rank = {}
@@ -38,10 +39,12 @@ class DisjointSet:
                 self.parent[root1] = root2
                 if self.rank[root1] == self.rank[root2]: self.rank[root2] += 1
 
-def mst(graph, visitorCallback=lambda x: x):
+def mst(graph):
     """Minimum spanning tree using some version of Prim's algorithm
     Note that this algorithm is only tested on unweighted graphs.
     The step of sorting weights is skipped.
+
+    returns a set of edges (tuples of vertices)
 
     implementation based on pseudocode found on Wikipedia
     https://en.wikipedia.org/wiki/Kruskal%27s_algorithm
@@ -53,10 +56,8 @@ def mst(graph, visitorCallback=lambda x: x):
         disjSet.make_set(vertex.getID())
     for (v1, v2) in graph.getAllEdges():
         if disjSet.find_set(v1) != disjSet.find_set(v2):
-            A = A.union((v1, v2))
+            A.add((v1, v2))
             disjSet.union(v1, v2)
-
-            visitorCallback((v1, v2))
 
     return A
 
@@ -64,15 +65,14 @@ def mst(graph, visitorCallback=lambda x: x):
 if __name__ == "__main__":
     from AdjacencyMatrix import AdjacencyMatrix
     g1 = AdjacencyMatrix(5)
-    g1.connectNodes(1, 3)
-    g1.connectNodes(2, 4)
-    g1.connectNodes(2, 3)
     g1.connectNodes(0, 3)
+    g1.connectNodes(1, 2)
+    g1.connectNodes(1, 3)
+    g1.connectNodes(1, 4)
+    g1.connectNodes(2, 3)
+    g1.connectNodes(2, 4)
 
     print("testcase for mst")
-    mst(g1, lambda e: print(e[0], e[1]))
-    print("Should show:")
-    print("3 2")
-    print("1 3")
-    print("3 0")
-    print("4 2")
+    print(mst(g1))
+    print("Should show")
+    print({(1, 2), (3, 0), (3, 2), (1, 4)})
