@@ -27,12 +27,7 @@ cellLookup = {
 }
 
 
-class UndirectedUnweightedGraph(AdjacencyMatrix):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-
-class Map(UndirectedUnweightedGraph):
+class Map(AdjacencyMatrix):
     """The map creates a 2d XY map out of an undirected acyclic graph"""
 
     def __init__(self, config, *args, **kwargs):
@@ -47,8 +42,14 @@ class Map(UndirectedUnweightedGraph):
         self._initializeEmptyRooms()
         self._computeDungeonWidth()
         self._computeDungeonHeight()
-        self._initializeEmptyCells()
+
         self._connectRooms()
+        self.redraw()
+
+    def redraw(self):
+        self._initializeEmptyCells()
+        self.drawRooms(self.config["X"], self.config["Y"])
+        self.drawConnections()
 
     def _initializeEmptyRooms(self):
         """Fills the graph with empty, locationless, sizeless rooms"""
@@ -83,30 +84,7 @@ class Map(UndirectedUnweightedGraph):
         return neighbors
 
     def _connectRooms(self):
-        """Connects rooms in the underlying adjacency matrix (graph)
-           constraints:
-           1. Each room may only be connected to direct XY-coordinate neighbors
-           2. Each room needs at least one connection
-           3. Need an unknown amount more than 15 pathways at minimum
-              requirements state that the grenade item
-              should collapse 15 hallways (out of 5x5)
-              but there should still be a path
-              from current location to end location
-           4. Cycles are required because the grenade
-              item will collapse hallways
-              but there should still be a path
-              from your current room to the stairway
-
-           Last update to this description: 17-10-2017 14:47:39
-           The current implementation of this algorithm fulfills
-           constraints 1 and 2,
-
-           constraint 3 is very likely to be met
-
-           constraint 4 is unknown atm
-
-           20% * ~200connections ~= 40 on average, should be slightly less
-        """
+        """Connects rooms in the underlying adjacency matrix (graph)"""
 
         # affects constraint#3 and constraint#4 statistically
         from roomConnector import roomConnector
@@ -145,20 +123,20 @@ class Map(UndirectedUnweightedGraph):
     def setCell(self, x, y, content):
         self.theMap[y][x] = content
 
-    def placeRooms(self, X, Y):
+    def drawRooms(self, X, Y):
         currentRoomIdx = 0
         for y in range(Y):
             for x in range(X):
                 uninitializedRoom = self.nodes[currentRoomIdx]
-                uninitializedRoom.placeSelf(x, y, self)
+                uninitializedRoom.draw(x, y, self)
 
                 currentRoomIdx += 1
 
-    def placeConnections(self):
+    def drawConnections(self):
         nodes = self.getAllNodes()
         for id1, id2 in self.getAllEdges():
             neighbor = nodes[id2]
-            nodes[id1].connectSelfToRoom(neighbor, self)
+            nodes[id1].drawRoomConnection(neighbor, self)
 
     def _computeDungeonWidth(self):
         # how many cells `X` rooms will maximally occupy
@@ -198,10 +176,10 @@ class Dungeon():
             config=dungeonConfig
         )
 
-        self.map.placeRooms(self.config["X"], self.config["Y"])
-        self.map.placeConnections()
 
     def __str__(self):
+        self.map.drawRooms(self.config["X"], self.config["Y"])
+        self.map.drawConnections()
         s = "I am a dungeon of {x}x{y}\n".format(
             x=self.config["X"],
             y=self.config["Y"]
@@ -221,7 +199,7 @@ class Room(Node):
         self.height = config["roomHeight"]
         self.config = config
 
-    def placeSelf(self, x, y, dungeonMap):
+    def draw(self, x, y, dungeonMap):
         """Operates in map-domain, exists in graph-domain
            x and y arguments are in graph coordinates"""
 
@@ -301,7 +279,7 @@ class Room(Node):
                 self.mapY + halfHeight
             )
 
-    def connectSelfToRoom(self, neighbor, dungeonMap):
+    def drawRoomConnection(self, neighbor, dungeonMap):
         """Operates in map-domain, exists in graph-domain"""
 
         # case 1, neighbor is above self
@@ -353,7 +331,8 @@ class Room(Node):
             )
 
 
-dungeon = Dungeon(dungeonConfig)
-fileprint("out/dungeon.txt", dungeon)
-fileprint("out/matrix.txt", dungeon.map.underlyingMatrixToStr())
-print("hi")
+if __name__ == "__main__":
+    dungeon = Dungeon(dungeonConfig)
+    fileprint("out/dungeon.txt", dungeon)
+    fileprint("out/matrix.txt", dungeon.map.underlyingMatrixToStr())
+    print("hi")

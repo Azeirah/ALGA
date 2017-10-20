@@ -52,7 +52,6 @@ class AdjacencyMatrix():
 
     def disconnectNodes(self, x, y):
         self.adjacency[y][x] = 0
-        self.adjacency[x][y] = 0
 
     def getAllEdges(self):
         """Gives you an iterable of connected node tuples.

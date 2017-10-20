@@ -23,7 +23,7 @@ def roomConnector(graph):
        for
        Graph(X=4, Y=8),
        Graph(X=7, Y=2)
-
+       Graph(X=5, Y=5)
        where X and Y are the dungeonConfigs
     """
 

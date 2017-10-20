@@ -31,6 +31,11 @@ def isConnectedGraph(graph):
     return len(dfs(graph, graph.getAllNodes()[0])) == graph.amountOfNodes
 
 
+def isMST(graph):
+    """Simple check to find out whether a graph is an MST"""
+    return graph.getAmountofNodes() - len(graph.getAllEdges()) == 1
+
+
 if __name__ == "__main__":
     print("Test for isConnectedGraph")
     from AdjacencyMatrix import AdjacencyMatrix

@@ -40,7 +40,7 @@ class DisjointSet:
                 if self.rank[root1] == self.rank[root2]: self.rank[root2] += 1
 
 def mst(graph):
-    """Minimum spanning tree using some version of Prim's algorithm
+    """Minimum spanning tree using some version of Kruskal's algorithm
     Note that this algorithm is only tested on unweighted graphs.
     The step of sorting weights is skipped.
 
@@ -74,5 +74,5 @@ if __name__ == "__main__":
 
     print("testcase for mst")
     print(mst(g1))
-    print("Should show")
+    print("Should show (ORDER DOESN'T MATTER!)")
     print({(1, 2), (3, 0), (3, 2), (1, 4)})
