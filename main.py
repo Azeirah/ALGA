@@ -57,7 +57,7 @@ class Map(UndirectedUnweightedGraph):
                 self.addRoom(i)
 
     def _getNeighbors(self, roomIdx):
-        nodes = self.getNodes()
+        nodes = self.getAllNodes()
 
         neighbors = []
 
@@ -111,7 +111,7 @@ class Map(UndirectedUnweightedGraph):
         # affects constraint#3 and constraint#4 statistically
         from roomConnector import roomConnector
 
-        for idx, room in enumerate(self.getNodes()):
+        for idx, room in enumerate(self.getAllNodes()):
             neighbors = self._getNeighbors(idx)
             # uncomment to manually check if neighbors are correct
             # check it with the map
@@ -155,7 +155,7 @@ class Map(UndirectedUnweightedGraph):
                 currentRoomIdx += 1
 
     def placeConnections(self):
-        nodes = self.getNodes()
+        nodes = self.getAllNodes()
         for id1, id2 in self.getAllEdges():
             neighbor = nodes[id2]
             nodes[id1].connectSelfToRoom(neighbor, self)

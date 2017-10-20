@@ -20,7 +20,7 @@ def dfs(graph, start, visitorCallback=lambda x: x):
             visited.add(vertex)
             visitorCallback(vertex)
             # yep, set arithmetic is beautiful <3
-            stack.extend(graph.getNodesConnectedTo(vertex) - visited)
+            stack.extend(graph.getAllNodesConnectedTo(vertex) - visited)
 
     return visited
 

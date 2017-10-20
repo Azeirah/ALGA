@@ -29,7 +29,7 @@ class AdjacencyMatrix():
     def getAmountofNodes(self):
         return self.amountOfNodes
 
-    def getNodes(self):
+    def getAllNodes(self):
         return self.nodes
 
     def __str__(self):
@@ -66,7 +66,7 @@ class AdjacencyMatrix():
 
         return adjacents
 
-    def getNodesConnectedTo(self, node):
+    def getAllNodesConnectedTo(self, node):
         """Gives you a list of nodes connected to the given node"""
         connections = set()
 

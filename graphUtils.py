@@ -28,7 +28,7 @@ def isConnectedGraph(graph):
 
     *-* * is not connected
     """
-    return len(dfs(graph, graph.getNodes()[0])) == graph.amountOfNodes
+    return len(dfs(graph, graph.getAllNodes()[0])) == graph.amountOfNodes
 
 
 if __name__ == "__main__":
