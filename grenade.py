@@ -17,8 +17,8 @@ if __name__ == "__main__":
 
     dungeonConfig = {
         # amount of rooms = X * Y
-        "X": 7,
-        "Y": 7,
+        "X": 4,
+        "Y": 4,
         "roomWidth": 5,
         "roomHeight": 5,
         "corridorLength": 3,
