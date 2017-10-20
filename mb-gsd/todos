@@ -10,12 +10,14 @@ High-level goals to get a decent grade
         = Implemented Kruskal's
     [x] Detect when grenade cannot be used, that is when the dungeon already IS an mst
         = Implemented isMST(graph) function
-    [x] Add grenade
+    [x] Add grenade command
 [ ] Implement talisman requirement
     [x] Implement Breadth-first search
     [x] Count layers
         = Implemented shortestPath(graph, start, goal)
-    [ ]
+    [ ] Add talisman command
+        [x] Add player position to dungeon
+            = added to map
 [ ] Implement Dijkstra's (using visitor pattern)
 [ ] Decorate map to look like a game
 
