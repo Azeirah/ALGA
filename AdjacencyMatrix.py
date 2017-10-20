@@ -11,6 +11,9 @@ class Node():
     def deepCopy(self):
         return Node(self.ID)
 
+    def __repr__(self):
+        return "AdjacencyMatrix.Node ID={ID}".format(ID=self.ID)
+
 
 # adjency matrix info
 # http://www.algolist.net/Data_structures/Graph/Internal_representation
@@ -68,6 +71,12 @@ class AdjacencyMatrix():
     def getAllNodesConnectedTo(self, node):
         """Gives you a list of nodes connected to the given node"""
         connections = set()
+
+        try:
+            node.getID()
+        except:
+            # node can be passed as its ID
+            node = self.nodes[node]
 
         for y in range(self.amountOfNodes):
             if self.adjacency[y][node.getID()] == 1:
