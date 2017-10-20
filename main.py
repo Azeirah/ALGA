@@ -2,8 +2,9 @@
 from AdjacencyMatrix import AdjacencyMatrix, Node
 import random
 import mapDrawing
+from player import Player
 from utilities import fileprint, percentageChance
-
+from cellLookup import cellLookup
 
 dungeonConfig = {
     # amount of rooms = X * Y
@@ -16,17 +17,6 @@ dungeonConfig = {
     "showID": True
 }
 
-
-cellLookup = {
-    "wall": "*",
-    "empty": " ",
-    "path": "·",
-    "player": "♚",
-    "start": "S",
-    "end": "E"
-}
-
-
 class Map(AdjacencyMatrix):
     """The map creates a 2d XY map out of an undirected acyclic graph"""
 
@@ -34,6 +24,8 @@ class Map(AdjacencyMatrix):
         super().__init__(*args, **kwargs)
 
         self.config = config
+
+        self.player = Player(self)
 
         # there is sequentiality inherent to these methods
         # they need to be executed in this order,
@@ -50,6 +42,7 @@ class Map(AdjacencyMatrix):
         self._initializeEmptyCells()
         self.drawRooms(self.config["X"], self.config["Y"])
         self.drawConnections()
+        self.player.draw()
 
     def _initializeEmptyRooms(self):
         """Fills the graph with empty, locationless, sizeless rooms"""
@@ -157,6 +150,8 @@ class Map(AdjacencyMatrix):
         self.height = maxRoomsHeight + paddingHeight + corridorsHeight
 
     def __str__(self):
+        self.redraw()
+
         m = "I am the map!\n"
         for y in range(self.height):
             row = ""
@@ -178,8 +173,6 @@ class Dungeon():
 
 
     def __str__(self):
-        self.map.drawRooms(self.config["X"], self.config["Y"])
-        self.map.drawConnections()
         s = "I am a dungeon of {x}x{y}\n".format(
             x=self.config["X"],
             y=self.config["Y"]
@@ -237,14 +230,14 @@ class Room(Node):
                b
            ****a****
            *       *
-        r  l       r  l
+        r  l   c   r  l
            *       *
            ****b****
                a
 
         gives back the relative-to-map coordinate
         for the requested location,
-        (a)bove, (r)ight, (b)elow or (l)eft
+        (a)bove, (r)ight, (b)elow or (l)eft, (c)enter
 
         look at the letters in the room to choose what you want
         the letters on the outside are only to make it easy
@@ -276,6 +269,11 @@ class Room(Node):
         if direction == "l":
             return (
                 self.mapX,
+                self.mapY + halfHeight
+            )
+        if direction == "c":
+            return (
+                self.mapX + halfWidth,
                 self.mapY + halfHeight
             )
 
