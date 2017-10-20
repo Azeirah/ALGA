@@ -55,15 +55,19 @@ class AdjacencyMatrix():
 
     def disconnectNodes(self, x, y):
         self.adjacency[y][x] = 0
+        self.adjacency[x][y] = 0
 
     def getAllEdges(self):
         """Gives you an iterable of connected node tuples.
-           Each tuple contains the ID's of two connected cells."""
+           Each tuple contains the ID's of two connected cells.
+           because this AdjacencyMatrix represents undirected graphs only,
+           (1, 0) == (0, 1) and the returned set will not contain duplicates
+           """
         adjacents = set()
 
         for y in range(self.amountOfNodes):
             for x in range(self.amountOfNodes):
-                if self.adjacency[y][x] == 1:
+                if self.adjacency[y][x] == 1 and (y, x) not in adjacents:
                     adjacents.add((x, y))
 
         return adjacents

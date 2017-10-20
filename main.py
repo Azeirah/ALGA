@@ -306,30 +306,6 @@ class Room(Node):
                 dungeonMap
             )
 
-        # case 3, neighbor is right of self
-        if self.roomY == neighbor.roomY and \
-           self.roomX < neighbor.roomX:
-            ownConnectorCoords = self.getConnectorCoordinates("r")
-            neighborConnectorCoords = neighbor.getConnectorCoordinates("l")
-            mapDrawing.drawHorizontalLine(
-                ownConnectorCoords[0], neighborConnectorCoords[0],
-                ownConnectorCoords[1],
-                cellLookup["path"],
-                dungeonMap
-            )
-
-        # case 4, neighbor is below self
-        if self.roomY < neighbor.roomY and \
-           self.roomX == neighbor.roomX:
-            ownConnectorCoords = self.getConnectorCoordinates("b")
-            neighborConnectorCoords = neighbor.getConnectorCoordinates("a")
-            mapDrawing.drawVerticalLine(
-                ownConnectorCoords[1], neighborConnectorCoords[1],
-                ownConnectorCoords[0],
-                cellLookup["path"],
-                dungeonMap
-            )
-
 
 if __name__ == "__main__":
     dungeon = Dungeon(dungeonConfig)
