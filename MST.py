@@ -38,9 +38,6 @@ class DisjointSet:
                 self.parent[root1] = root2
                 if self.rank[root1] == self.rank[root2]: self.rank[root2] += 1
 
-
-
-
 def mst(graph, visitorCallback=lambda x: x):
     """Minimum spanning tree using some version of Prim's algorithm
     Note that this algorithm is only tested on unweighted graphs.
