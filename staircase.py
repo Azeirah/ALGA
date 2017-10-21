@@ -29,6 +29,6 @@ class Staircase():
         x, y = self.map.config["X"], self.map.config["Y"]
 
         minimum = (x - 1) * (y - 1)
-        maximum = (  x    *    y  )
+        maximum = (  x    *    y  ) - 1
 
         return random.randint(minimum, maximum)
