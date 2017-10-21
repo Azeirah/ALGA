@@ -18,10 +18,12 @@ class Game():
             print(self.dungeon)
             self.printAvailableCommands()
             answer = self.input()
-            if len(answer):
-                print("\n" * 80)
+            output = self.processAnswer(answer)
+
+            print("\n" * 80)
+            if len(output):
                 print("**")
-                self.processAnswer(answer)
+                print(output)
                 print("**")
 
     def printAvailableCommands(self):
@@ -36,15 +38,22 @@ class Game():
         if command[0] == "m":
             try:
                 position = int(answer[2:])
-                print("moving to position {p}".format(p=position))
+                return "moving to position {p}".format(p=position)
                 self.map.player.move(position)
             except:
-                print("Warning, wrong input")
+                return "Warning, wrong input"
         if command == "g":
-            # more points is more better.
-            self.dungeon.map.grenade.explode()
+            grenade = self.dungeon.map.grenade
+            if grenade.hasExploded():
+                return "Throwing another grenade is a bad idea"
+            else:
+                # more points is more better.
+                self.dungeon.map.grenade.explode()
+                return "BOOOM"
         if command == "t":
             talisman(self.dungeon)
+
+        return ""
 
 
 if __name__ == "__main__":

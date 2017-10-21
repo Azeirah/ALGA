@@ -11,7 +11,7 @@ High-level goals to get a decent grade
     [x] Detect when grenade cannot be used, that is when the dungeon already IS an mst
         = Implemented isMST(graph) function
     [x] Add grenade command
-    [ ] Squiggles! ~~~~
+    [x] Squiggles! ~~~~
 [x] Implement talisman
     [x] Implement Breadth-first search
     [x] Count layers
@@ -25,6 +25,7 @@ High-level goals to get a decent grade
 [ ] Make game interactive
     [x] Decorate map to look like a game
     [ ] Make game class and add inputs for
-        [ ] talisman
-        [ ] graph
+        [x] talisman
+        [x] graph
         [ ] player movement
+            [ ] could be improved by restricting movement

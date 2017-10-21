@@ -17,6 +17,9 @@ class Grenade():
                                           self.map,
                                           cellType="destroyedWall")
 
+    def hasExploded(self):
+        return len(self.removedEdges) > 0
+
     def explode(self):
         graph = self.map
 
