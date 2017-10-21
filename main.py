@@ -6,18 +6,7 @@ from player import Player
 from utilities import fileprint, percentageChance
 from cellLookup import cellLookup, printSymbolLegend
 from staircase import Staircase
-
-
-dungeonConfig = {
-    # amount of rooms = X * Y
-    "X": 5,
-    "Y": 5,
-    "roomWidth": 5,
-    "roomHeight": 5,
-    "corridorLength": 3,
-    "padding": 5,
-    "showID": True
-}
+from defaultConfig import dungeonConfig
 
 class Map(AdjacencyMatrix):
     """The map creates a 2d XY map out of an undirected acyclic graph"""
@@ -306,7 +295,6 @@ class Room(Node):
                 cellLookup["path"],
                 dungeonMap
             )
-
 
 if __name__ == "__main__":
     printSymbolLegend()
