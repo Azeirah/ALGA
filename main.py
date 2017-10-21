@@ -145,7 +145,6 @@ class Map(AdjacencyMatrix):
     def __str__(self):
         self.redraw()
 
-        m = "I am the map!\n"
         for y in range(self.height):
             row = ""
             for x in range(self.width):
