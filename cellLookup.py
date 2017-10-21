@@ -5,7 +5,8 @@ cellLookup = {
     "player": "!",
     "start": "S",
     "end": "E",
-    "staircase": "U"
+    "staircase": "U",
+    "destroyedWall": "~"
 }
 
 def printSymbolLegend():

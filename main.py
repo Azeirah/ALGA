@@ -2,10 +2,13 @@
 from AdjacencyMatrix import AdjacencyMatrix, Node
 import random
 import mapDrawing
-from player import Player
 from utilities import fileprint, percentageChance
 from cellLookup import cellLookup, printSymbolLegend
+
+from player import Player
 from staircase import Staircase
+from grenade import Grenade
+
 from defaultConfig import dungeonConfig
 
 class Map(AdjacencyMatrix):
@@ -18,6 +21,7 @@ class Map(AdjacencyMatrix):
 
         self.player = Player(self)
         self.staircase = Staircase(self)
+        self.grenade = Grenade(self)
 
         # there is sequentiality inherent to these methods
         # they need to be executed in this order,
@@ -34,6 +38,8 @@ class Map(AdjacencyMatrix):
         self._initializeEmptyCells()
         self.drawRooms(self.config["X"], self.config["Y"])
         self.drawConnections()
+
+        self.grenade.draw()
         self.staircase.draw()
         self.player.draw()
 
@@ -269,7 +275,7 @@ class Room(Node):
                 self.mapY + halfHeight
             )
 
-    def drawRoomConnection(self, neighbor, dungeonMap):
+    def drawRoomConnection(self, neighbor, dungeonMap, cellType="path"):
         """Operates in map-domain, exists in graph-domain"""
 
         # case 1, neighbor is above self
@@ -280,7 +286,7 @@ class Room(Node):
             mapDrawing.drawVerticalLine(
                 neighborConnectorCoords[1], ownConnectorCoords[1],
                 ownConnectorCoords[0],
-                cellLookup["path"],
+                cellLookup[cellType],
                 dungeonMap
             )
 
@@ -292,7 +298,7 @@ class Room(Node):
             mapDrawing.drawHorizontalLine(
                 neighborConnectorCoords[0], ownConnectorCoords[0],
                 ownConnectorCoords[1],
-                cellLookup["path"],
+                cellLookup[cellType],
                 dungeonMap
             )
 

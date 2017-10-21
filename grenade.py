@@ -2,14 +2,32 @@
 from mst import mst
 from graphUtils import isMST
 
-def grenade(dungeon):
-    graph = dungeon.map
-    edges = graph.getAllEdges()
-    keepTheseEdges = mst(dungeon.map)
-    removeTheseEdges = edges - keepTheseEdges
 
-    for e1, e2 in removeTheseEdges:
-        graph.disconnectNodes(e1, e2)
+class Grenade():
+    def __init__(self, theMap):
+        self.map = theMap
+
+        self.removedEdges = ()
+
+    def draw(self):
+        nodes = self.map.getAllNodes()
+        for id1, id2, in self.removedEdges:
+            neighbor = nodes[id2]
+            nodes[id1].drawRoomConnection(neighbor,
+                                          self.map,
+                                          cellType="destroyedWall")
+
+    def explode(self):
+        graph = self.map
+
+        edges = graph.getAllEdges()
+        keepTheseEdges = mst(self.map)
+        removeTheseEdges = edges - keepTheseEdges
+
+        for e1, e2 in removeTheseEdges:
+            graph.disconnectNodes(e1, e2)
+
+        self.removedEdges = removeTheseEdges
 
 
 if __name__ == "__main__":
@@ -34,7 +52,7 @@ if __name__ == "__main__":
     print("*"*80)
     print(dungeon)
 
-    grenade(dungeon)
+    dungeon.map.grenade.explode()
     dungeon.map.redraw()
 
     print("*"*80)
