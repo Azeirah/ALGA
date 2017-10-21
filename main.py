@@ -4,7 +4,9 @@ import random
 import mapDrawing
 from player import Player
 from utilities import fileprint, percentageChance
-from cellLookup import cellLookup
+from cellLookup import cellLookup, printSymbolLegend
+from staircase import Staircase
+
 
 dungeonConfig = {
     # amount of rooms = X * Y
@@ -26,6 +28,7 @@ class Map(AdjacencyMatrix):
         self.config = config
 
         self.player = Player(self)
+        self.staircase = Staircase(self)
 
         # there is sequentiality inherent to these methods
         # they need to be executed in this order,
@@ -42,6 +45,7 @@ class Map(AdjacencyMatrix):
         self._initializeEmptyCells()
         self.drawRooms(self.config["X"], self.config["Y"])
         self.drawConnections()
+        self.staircase.draw()
         self.player.draw()
 
     def _initializeEmptyRooms(self):
@@ -170,7 +174,6 @@ class Dungeon():
             amountOfNodes=self.config["X"] * self.config["Y"],
             config=dungeonConfig
         )
-
 
     def __str__(self):
         s = "I am a dungeon of {x}x{y}\n".format(
@@ -306,7 +309,8 @@ class Room(Node):
 
 
 if __name__ == "__main__":
+    printSymbolLegend()
+
     dungeon = Dungeon(dungeonConfig)
     fileprint("out/dungeon.txt", dungeon)
     fileprint("out/matrix.txt", dungeon.map.underlyingMatrixToStr())
-    print("hi")
