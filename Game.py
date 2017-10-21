@@ -1,7 +1,6 @@
 from main import Dungeon
 from cellLookup import printSymbolLegend
 from defaultConfig import dungeonConfig
-from grenade import grenade
 from talisman import talisman
 
 
@@ -19,10 +18,11 @@ class Game():
             print(self.dungeon)
             self.printAvailableCommands()
             answer = self.input()
-            print("\n"*80)
-            print("**")
-            self.processAnswer(answer)
-            print("**")
+            if len(answer):
+                print("\n" * 80)
+                print("**")
+                self.processAnswer(answer)
+                print("**")
 
     def printAvailableCommands(self):
         print("(m)ove <id>, (g)renade, (t)alisman")
@@ -41,7 +41,8 @@ class Game():
             except:
                 print("Warning, wrong input")
         if command == "g":
-            grenade(self.dungeon)
+            # more points is more better.
+            self.dungeon.map.grenade.explode()
         if command == "t":
             talisman(self.dungeon)
 
@@ -49,4 +50,3 @@ class Game():
 if __name__ == "__main__":
     game = Game(dungeonConfig)
     game.startLoop()
-
