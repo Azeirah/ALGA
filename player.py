@@ -13,6 +13,6 @@ class Player():
         coords = room.getConnectorCoordinates("c")
         self.map.setCell(coords[0], coords[1], cellLookup["player"])
 
-    def movePlayer(self, roomIdx):
+    def move(self, roomIdx):
         """Player position is the idx of a graph node."""
         self.position = roomIdx
