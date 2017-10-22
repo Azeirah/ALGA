@@ -4,6 +4,7 @@ import random
 
 CUTPERCENTAGE = .3
 
+
 def roomConnector(graph):
     """Connects rooms in the underlying adjacency matrix (graph)
        constraints:

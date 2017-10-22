@@ -12,9 +12,9 @@ def talisman(dungeon):
         distance = 0
 
     if distance == 0:
-        print("You are in the staircase room!")
+        return "You are in the staircase room!"
     else:
-        print("The length of the shortest path is {l}".format(l=distance))
+        return "The length of the shortest path is {lngth}".format(lngth=distance)
 
 
 

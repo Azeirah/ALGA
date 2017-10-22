@@ -1,15 +1,19 @@
 # -*- coding: utf-8 -*-
 from AdjacencyMatrix import AdjacencyMatrix, Node
-import random
 import mapDrawing
 from utilities import fileprint, percentageChance
 from cellLookup import cellLookup, printSymbolLegend
+import random
+
+from dfs import dfs
 
 from player import Player
 from staircase import Staircase
 from grenade import Grenade
+from enemy import Enemy
 
 from defaultConfig import dungeonConfig
+
 
 class Map(AdjacencyMatrix):
     """The map creates a 2d XY map out of an undirected acyclic graph"""
@@ -32,6 +36,7 @@ class Map(AdjacencyMatrix):
         self._computeDungeonHeight()
 
         self._connectRooms()
+        self._initializeEnemies()
         self.redraw()
 
     def redraw(self):
@@ -48,6 +53,19 @@ class Map(AdjacencyMatrix):
         for i in range(self.getAmountofNodes()):
             for j in range(self.getAmountofNodes()):
                 self.addRoom(i)
+
+    def _initializeEnemies(self):
+        path = dfs(self, self.nodes[0])
+
+        for i, node in enumerate(path):
+            # skip the first (starting) element
+            # skip some rooms randomly
+            # not all rooms have enemies >:(
+            if percentageChance(76) and i != 0:
+                # empirically chosen weird formula
+                hp = max(int(random.gauss(i // 3, 1)), 1)
+
+                node.addEnemy(Enemy(node, hp))
 
     def _getNeighbors(self, roomIdx):
         nodes = self.getAllNodes()
@@ -189,6 +207,7 @@ class Room(Node):
         self.width = config["roomWidth"]
         self.height = config["roomHeight"]
         self.config = config
+        self.enemy = None
 
     def draw(self, x, y, dungeonMap):
         """Operates in map-domain, exists in graph-domain
@@ -222,6 +241,12 @@ class Room(Node):
             ID = str(self.ID)
             for i, s in enumerate(ID):
                 dungeonMap.setCell(self.mapX + i - 1, self.mapY - 1, s)
+
+        if self.enemy:
+            dungeonMap.setCell(self.mapX + 1, self.mapY + 1, self.enemy.cellType())
+
+    def addEnemy(self, enemy):
+        self.enemy = enemy
 
     def getConnectorCoordinates(self, direction):
         """
@@ -301,6 +326,7 @@ class Room(Node):
                 cellLookup[cellType],
                 dungeonMap
             )
+
 
 if __name__ == "__main__":
     printSymbolLegend()

@@ -21,11 +21,16 @@ High-level goals to get a decent grade
             = added to map
         [x] Add staircase to dungeon
             = added to map
-[ ] Implement Dijkstra's (using visitor pattern)
-[ ] Make game interactive
+[x] Make game interactive
     [x] Decorate map to look like a game
-    [ ] Make game class and add inputs for
+    [x] Make game class and add inputs for
         [x] talisman
         [x] graph
-        [ ] player movement
+        [.] player movement
             [ ] could be improved by restricting movement
+[ ] Implement silver-talisman
+    [ ] Implement Dijkstra's
+        [ ] Add enemies
+            [ ] Health
+            [ ] Live in rooms
+            [ ]

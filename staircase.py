@@ -1,6 +1,7 @@
 from cellLookup import cellLookup
 import random
 
+
 class Staircase():
     """The staircase is the end of the dungeon"""
 

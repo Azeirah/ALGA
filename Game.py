@@ -2,6 +2,7 @@ from main import Dungeon
 from cellLookup import printSymbolLegend
 from defaultConfig import dungeonConfig
 from talisman import talisman
+import sys
 
 
 class Game():
@@ -27,13 +28,15 @@ class Game():
                 print("**")
 
     def printAvailableCommands(self):
-        print("(m)ove <id>, (g)renade, (t)alisman")
+        print("(m)ove <id>, (g)renade, (t)alisman, (q)uit")
 
     def input(self):
         ans = input("> ")
         return ans
 
     def processAnswer(self, answer):
+        """Should return a string to show what has happened"""
+
         command = answer[0]
         if command[0] == "m":
             try:
@@ -51,7 +54,9 @@ class Game():
                 self.dungeon.map.grenade.explode()
                 return "BOOOM"
         if command == "t":
-            talisman(self.dungeon)
+            return talisman(self.dungeon)
+        if command == "q":
+            sys.exit(0)
 
         return ""
 
