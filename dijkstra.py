@@ -4,8 +4,12 @@
 
 _INFINITY = 999999999999999999999
 def length(v1, v2):
-    throw NotImplemented()
+    """going from v1 (current room) to v2 (new room) damage is v2's enemy"""
 
+    if v2.enemy:
+        return v2.enemy.hp
+
+    return 0
 
 def dijkstra(graph, start, end):
     Q = set()
